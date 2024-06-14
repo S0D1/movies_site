@@ -1,0 +1,43 @@
+{% extends "main.html" %}
+{% block title %}{{ movie.title }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ movie.title }}</h1>
+    <p><strong>Год выпуска:</strong> {{ movie.year }}</p>
+    <p><strong>Страна выпуска:</strong> {{ movie.country }}</p>
+    <p><strong>Жанры:</strong> {{ movie.genres }}</p>
+    <p><strong>Режиссер:</strong> {{ movie.director }}</p>
+    <p><strong>Рейтинг:</strong> {{ movie.rating }}</p>
+    <img src="{{ url_for('static', filename=movie.photo) }}" alt="{{ movie.title }}" class="img-fluid mb-4">
+
+    <h2>Отзывы</h2>
+    {% if current_user.is_authenticated %}
+    <form method="POST" action="{{ url_for('movie', movie_id=movie.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control") }}
+            {% for error in form.content.errors %}
+            <p class="text-danger">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    {% else %}
+    <p>Пожалуйста, <a href="{{ url_for('login') }}">войдите в систему</a>, чтобы оставить отзыв.</p>
+    {% endif %}
+
+    <div class="mt-4">
+        {% for review in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>{{ review.content }}</p>
+                <p class="text-muted">Автор: {{ review.author.username }} | Дата: {{ review.date_posted.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
